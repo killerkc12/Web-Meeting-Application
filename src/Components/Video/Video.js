@@ -27,7 +27,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 import "./Video.css"
 import { Col } from 'react-grid-system'
 
-const server_url =  "http://localhost:4001"
+const server_url =   "https://web-meeting-application.herokuapp.com/" || "http://localhost:4001" 
 
 var connections = {}
 const peerConnectionConfig = {
