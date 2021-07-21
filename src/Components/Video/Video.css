@@ -226,3 +226,12 @@ h3{
 }
 
 /* end screen icons  */
+
+.chat{
+    cursor: pointer;
+}
+
+.pre_window_input{
+    color: whitesmoke;
+    border-bottom: whitesmoke;
+}

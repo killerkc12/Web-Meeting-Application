@@ -59,7 +59,7 @@ class Video extends Component {
 			message: "",
 			newmessages: 0,
 			askForUsername: true,
-			username: faker.internet.userName(),
+			username: "",
 		}
 		connections = {}
 
@@ -409,7 +409,10 @@ class Video extends Component {
 		}
 	}
 
-	handleUsername = (e) => this.setState({ username: e.target.value })
+	handleUsername = (e) => {
+		console.log(this.state.username," username updated")
+		this.setState({ username: e.target.value })
+	}
 
 	sendMessage = () => {
 		socket.emit('chat-message', this.state.message, this.state.username)
@@ -440,7 +443,16 @@ class Video extends Component {
 		})
 	}
 
-	connect = () => this.setState({ askForUsername: false }, () => this.getMedia())
+	connect = () =>{
+		console.log(this.username," username is here")
+		if(this.state.username === null || this.state.username === undefined || this.state.username === ""){
+			const mandatory = document.getElementById('mandatory')
+			mandatory.style.display = "block"
+			// alert("Username is Mandatory!")
+		}
+		else
+			this.setState({ askForUsername: false }, () => this.getMedia())
+	} 
 
 	isChrome = function () {
 		let userAgent = (navigator && (navigator.userAgent || '')).toLowerCase()
@@ -452,7 +464,7 @@ class Video extends Component {
 	}
 
 	render() {
-		if(this.isChrome() === false){
+		if(this.isChrome() === null){
 			return (
 				<div style={{background: "white", width: "30%", height: "auto", padding: "20px", minWidth: "400px",
 						textAlign: "center", margin: "auto", marginTop: "50px", justifyContent: "center"}}>
@@ -468,9 +480,9 @@ class Video extends Component {
 						<div className="my-video">
 						<video style={{borderRadius:"10px"}} width="100%" height="100%"  id="my-video" ref={this.localVideoref} autoPlay muted>
 							</video>
-							<div style={{position:"absolute", display:"flex", marginLeft:"40%", bottom:"20px"}}>
-							{
-											this.state.audio === true ?
+							{/* <div style={{position:"absolute", display:"flex", marginLeft:"40%", bottom:"20px"}}>
+										{
+											this.state.audio ?
 												<div className="screen_mic"  onClick={this.handleAudio} >
 												<IoMdMic className="screen_mic_icon"/> 
 												</div>
@@ -489,17 +501,20 @@ class Video extends Component {
 												<BiVideoOff className="screen_video_icon"/>
 												</div>
 										}
-							</div>
+							</div> */}
 						</div>
 							
 						</Col>
 						<Col>
 							<div style={{textAlign:"center", marginTop:"200px"}}>
 								<h3>Ready to Join</h3>
-								<Input placeholder="Username" hidden value={Math.random().toString(36).substring(2,10)} onChange={e => this.handleUsername(e)} />
+								<p id="mandatory" style={{color:"red",display:"none"}}>Username is Mandatory!</p>
+								<Input style={{color:"whitesmoke",borderColor:"whitesmoke"}}
+								 value={this.state.username}
+								 required placeholder="Username" onChange={e => this.handleUsername(e)} />
 								<Button variant="contained" className="join_button" onClick={this.connect} style={{ 
-									margin: "20px",backgroundColor:"#1B73E8", color:"whitesmoke", height:"50px", width:"100px", fontSize:"20px",
-									borderRadius:"20px",fontWeight:"bold" }}>Joint</Button>
+									margin: "20px",backgroundColor:"#1B73E8", color:"whitesmoke", height:"50px", width:"200px", fontSize:"20px",
+									borderRadius:"20px",fontWeight:"bold" }}>Join Meeting</Button>
 							</div>
 						</Col>
 					</Row>
@@ -557,7 +572,7 @@ class Video extends Component {
 									<div className="people">
 										<MdPeople/>
 									</div>
-									<div className="chat">
+									<div className="chat" onClick={this.openChat}>
 										<MdChat/>
 									</div>
 								</div>
