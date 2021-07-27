@@ -321,6 +321,8 @@ class Video extends Component {
 							let main = document.getElementById('main')
 							let cssMesure = this.changeCssVideos(main)
 
+							
+
 							let video = document.createElement('video')
 
 							let css = {minWidth: cssMesure.minWidth, minHeight: cssMesure.minHeight, maxHeight: "100%", margin: "10px",
