@@ -231,6 +231,10 @@ h3{
     cursor: pointer;
 }
 
+.people{
+    cursor: pointer;
+}
+
 .pre_window_input{
     color: whitesmoke;
     border-bottom: whitesmoke;

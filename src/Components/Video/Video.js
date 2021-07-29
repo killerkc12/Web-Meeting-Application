@@ -27,7 +27,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 import "./Video.css"
 import { Col } from 'react-grid-system'
 
-const server_url =   "https://web-meeting-application.herokuapp.com/" || "http://localhost:4001" 
+const server_url =    "http://localhost:4001" || "https://web-meeting-application.herokuapp.com/"
 
 var connections = {}
 const peerConnectionConfig = {
@@ -53,13 +53,15 @@ class Video extends Component {
 			video: false,
 			audio: false,
 			screen: false,
-			showModal: false,
+			chatModal: false,
+			userModal: false,
 			screenAvailable: false,
 			messages: [],
 			message: "",
 			newmessages: 0,
 			askForUsername: true,
 			username: "",
+			usernames: []
 		}
 		connections = {}
 
@@ -284,7 +286,7 @@ class Video extends Component {
 		socket.on('signal', this.gotMessageFromServer)
 
 		socket.on('connect', () => {
-			socket.emit('join-call', window.location.href)
+			socket.emit('join-call', window.location.href, this.state.username)
 			socketId = socket.id
 
 			socket.on('chat-message', this.addMessage)
@@ -300,7 +302,9 @@ class Video extends Component {
 				}
 			})
 
-			socket.on('user-joined', (id, clients) => {
+			socket.on('user-joined', (id, clients, usernames) => {
+				this.setState({usernames})
+				console.log("usernames : ",this.state.usernames)
 				clients.forEach((socketListId) => {
 					connections[socketListId] = new RTCPeerConnection(peerConnectionConfig)
 					// Wait for their ice candidate       
@@ -398,9 +402,12 @@ class Video extends Component {
 		window.location.href = "/"
 	}
 
-	openChat = () => this.setState({ showModal: true, newmessages: 0 })
-	closeChat = () => this.setState({ showModal: false })
+	openChat = () => this.setState({ chatModal: true, newmessages: 0 })
+	closeChat = () => this.setState({ chatModal: false })
 	handleMessage = (e) => this.setState({ message: e.target.value })
+
+	openUser = () => this.setState({ userModal: true})
+	closeUser = () => this.setState({ userModal: false})
 
 	addMessage = (data, sender, socketIdSender) => {
 		this.setState(prevState => ({
@@ -480,7 +487,7 @@ class Video extends Component {
 					<Row className="screen">
 						<Col>
 						<div className="my-video">
-						<video style={{borderRadius:"10px"}} width="100%" height="100%"  id="my-video" ref={this.localVideoref} autoPlay muted>
+						<video style={{borderRadius:"10px",backgroundColor:"#3C4043"}} width="100%" height="100%"  id="my-video" ref={this.localVideoref} autoPlay muted>
 							</video>
 							{/* <div style={{position:"absolute", display:"flex", marginLeft:"40%", bottom:"20px"}}>
 										{
@@ -571,8 +578,8 @@ class Video extends Component {
 									<div className="recording">
 										<BiVideoRecording/>
 									</div>
-									<div className="people">
-										<MdPeople/>
+									<div className="people" onClick={this.openUser} >
+										<MdPeople/><sup>{this.state.usernames.length}</sup>
 									</div>
 									<div className="chat" onClick={this.openChat}>
 										<MdChat/>
@@ -581,8 +588,8 @@ class Video extends Component {
 								</Col>
 							</Row>
 						</div>
-
-						<Modal show={this.state.showModal} onHide={this.closeChat} style={{ zIndex: "999999" }}>
+						{/* //modal for chat */}
+						<Modal show={this.state.chatModal} onHide={this.closeChat} style={{ zIndex: "999999" }}>
 							<Modal.Header closeButton>
 								<Modal.Title>Chat Room</Modal.Title>
 							</Modal.Header>
@@ -598,6 +605,20 @@ class Video extends Component {
 								<Button variant="contained" color="primary" onClick={this.sendMessage}>Send</Button>
 							</Modal.Footer>
 						</Modal>
+						{/* //modal for list of participants */}
+						<Modal show={this.state.userModal} onHide={this.closeUser} style={{ zIndex: "999999" }}>
+							<Modal.Header closeButton>
+								<Modal.Title>People List</Modal.Title>
+							</Modal.Header>
+							<Modal.Body style={{ overflow: "auto", overflowY: "auto", height: "400px", textAlign: "left" }} >
+								{this.state.usernames.length > 0 ? this.state.usernames.map((item, index) => (
+									<div key={index} style={{textAlign: "left"}}>
+										<p style={{ wordBreak: "break-all" }}>{index+1} : <b>{item}</b></p><hr></hr>
+									</div>
+								)) : <p>No message yet</p>}
+							</Modal.Body>
+						</Modal>
+
 
 						<div className="container">
 							<Row id="main" className="flex-container" style={{ margin: "", padding: "20px" }}>

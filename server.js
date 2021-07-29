@@ -25,21 +25,25 @@ sanitizeString = (str) => {
 }
 
 connections = {}
+usernames = {}
 messages = {}
 timeOnline = {}
 
 io.on('connection', (socket) => {
 
-	socket.on('join-call', (path) => {
+	socket.on('join-call', (path, username) => {
 		if(connections[path] === undefined){
 			connections[path] = []
+			usernames[path] = []
 		}
+		console.log("username is : ",username);
 		connections[path].push(socket.id)
+		usernames[path].push(username)
 
 		timeOnline[socket.id] = new Date()
 
 		for(let a = 0; a < connections[path].length; ++a){
-			io.to(connections[path][a]).emit("user-joined", socket.id, connections[path])
+			io.to(connections[path][a]).emit("user-joined", socket.id, connections[path], usernames[path])
 		}
 
 		if(messages[path] !== undefined){
