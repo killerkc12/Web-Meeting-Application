@@ -40,15 +40,27 @@ body {
 
 .my-video{
     position: relative;
-    /* border-style: solid; */
-    /* border-color: #bdbdbd; */
     background-color: #202124;
     width: 80%;
-    /* height: 100%; */
     border-radius: 20px;
-    /* text-align: right; */
     margin-left: 20%;
-    /* display: block; */
+}
+
+@media only screen and (max-width : 480px) {
+    .my-video{
+        position: relative;
+        background-color: #202124;
+        /* width: 80%; */
+        min-width: 300px;
+        border-radius: 20px;
+        margin: 10%;
+    }
+    .screen{
+        margin-top: 0;
+    }
+    .ready-to-join{
+        margin-top: 0 !important;
+    }
 }
 
 .screen{

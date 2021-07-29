@@ -27,8 +27,8 @@ import 'bootstrap/dist/css/bootstrap.css'
 import "./Video.css"
 import { Col } from 'react-grid-system'
 
-const server_url =    "https://web-meeting-application.herokuapp.com/" ||  "http://localhost:4001"
-
+// const server_url = "http://localhost:4001"
+const server_url = "https://web-meeting-application.herokuapp.com/"
 var connections = {}
 const peerConnectionConfig = {
 	'iceServers': [
@@ -244,6 +244,42 @@ class Video extends Component {
 		}
 	}
 
+	changeCssVideosForMobile = (main) => {
+		let widthMain = main.offsetWidth
+		let minWidth = "40%"
+		if ((widthMain * 30 / 100) < 300) {
+			minWidth = "40%"
+		}
+		let minHeight = "33%"
+
+		let height = String(100 / elms) + "%"
+		let width = ""
+		if(elms === 0 || elms === 1) {
+			width = "100%"
+			height = "100%"
+		} else if (elms === 2) {
+			width = "100%"
+			height = "50%"
+		} else if (elms === 3 || elms === 4) {
+			width = "100%"
+			height = "33%"
+		} else {
+			height = String(100 / elms) + "%"
+		}
+
+		let videos = main.querySelectorAll("video")
+		for (let a = 0; a < videos.length; ++a) {
+			videos[a].style.minWidth = minWidth
+			videos[a].style.minHeight = minHeight
+			videos[a].style.borderRadius = "10px"
+			videos[a].style.backgroundColor = "#3C4043"
+			videos[a].style.setProperty("width", width)
+			videos[a].style.setProperty("height", height)
+		}
+
+		return {minWidth, minHeight, width, height}
+	}
+
 	changeCssVideos = (main) => {
 		let widthMain = main.offsetWidth
 		let minWidth = "30%"
@@ -298,7 +334,14 @@ class Video extends Component {
 					video.parentNode.removeChild(video)
 
 					let main = document.getElementById('main')
-					this.changeCssVideos(main)
+					let mq = window.matchMedia("(min-width: 480px)")
+					if(!mq.matches){
+						console.log("mobile")
+						this.changeCssVideosForMobile(main)
+					}else{
+						console.log("desktop")
+						this.changeCssVideos(main)
+					}
 				}
 			})
 
@@ -323,7 +366,16 @@ class Video extends Component {
 						} else {
 							elms = clients.length
 							let main = document.getElementById('main')
-							let cssMesure = this.changeCssVideos(main)
+							let cssMesure 
+							// let cssMesure = this.changeCssVideos(main)
+							let mq = window.matchMedia("(min-width: 480px)")
+							if(!mq.matches){
+								console.log("mobile1")	
+								cssMesure = this.changeCssVideosForMobile(main)
+							}else{
+								console.log("desktop1")
+								cssMesure = this.changeCssVideos(main)
+							}
 
 							
 
@@ -515,7 +567,7 @@ class Video extends Component {
 							
 						</Col>
 						<Col>
-							<div style={{textAlign:"center", marginTop:"200px"}}>
+							<div class="ready-to-join" style={{textAlign:"center", marginTop:"200px"}}>
 								<h3>Ready to Join</h3>
 								<p id="mandatory" style={{color:"red",display:"none"}}>Username is Mandatory!</p>
 								<Input style={{color:"whitesmoke",borderColor:"whitesmoke"}}
