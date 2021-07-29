@@ -54,6 +54,7 @@ body {
         min-width: 300px;
         border-radius: 20px;
         margin: 10%;
+        margin-top: 0;
     }
     .screen{
         margin-top: 0;
