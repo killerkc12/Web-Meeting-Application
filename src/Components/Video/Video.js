@@ -211,7 +211,7 @@ class Video extends Component {
 				try {
 					let tracks = this.localVideoref.current.srcObject.getTracks()
 					tracks.forEach(track => track.stop())
-				} catch(e) { console.log(e) }
+				} catch(e) { console.log(e) } 
 
 				let blackSilence = (...args) => new MediaStream([this.black(...args), this.silence()])
 				window.localStream = blackSilence()
