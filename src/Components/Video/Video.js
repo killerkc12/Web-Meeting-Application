@@ -27,7 +27,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 import "./Video.css"
 import { Col } from 'react-grid-system'
 
-const server_url =    "http://localhost:4001" || "https://web-meeting-application.herokuapp.com/"
+const server_url =    "https://web-meeting-application.herokuapp.com/" ||  "http://localhost:4001"
 
 var connections = {}
 const peerConnectionConfig = {
@@ -615,7 +615,7 @@ class Video extends Component {
 									<div key={index} style={{textAlign: "left"}}>
 										<p style={{ wordBreak: "break-all" }}>{index+1} : <b>{item}</b></p><hr></hr>
 									</div>
-								)) : <p>No message yet</p>}
+								)) : <p></p>}
 							</Modal.Body>
 						</Modal>
 
