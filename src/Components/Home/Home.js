@@ -1,42 +1,92 @@
 import React from 'react'
 import { useState } from 'react'
-import { Button, Col, Container, Form, InputGroup, Row } from 'react-bootstrap'
 import { useHistory } from 'react-router-dom'
+import { auth, provider } from '../Firebase/Firebase'
+import SignInWithGoogle from '../Login/SignInWithGoogle'
+import { actionTypes } from '../ReactContextAPI/reducer'
+import { useStateValue } from '../ReactContextAPI/StateProvider'
 import './Home.css'
 
+const userImage = "https://www.vippng.com/png/full/355-3554387_create-digital-profile-icon-blue-profile-icon-png.png"
 const img = "https://thumbs.dreamstime.com/b/view-over-businessman-shoulder-laptop-where-four-multiracial-colleagues-engaged-group-meeting-line-video-conference-call-178126113.jpg"
 
 const Home = () => {
 
     const [code, setCode] = useState("")
+    const [user, setUser] = useState(null)
+    const [state, dispatch] = useStateValue()
     const history = useHistory()
+
 
 
      const NewMeet = () => {
          console.log("clicked")
         let code = Math.random().toString(36).substring(2,10)
-        history.push(`/${code}`)
+        history.push({
+            pathname:`/${code}`,
+            user
+        })
     }
 
     const JoinMeet = () => {
         history.push(`/${code}`)
     }
     
-    // document.addEventListener('click', NewMeet)
+    const LoginInWithGoogle = () => {
+        auth.signInWithPopup(provider)
+        .then(result => {
+            setUser(result.user)
+            dispatch({
+                type: actionTypes.SET_USER,
+                user: result.user
+            })
+            history.push(`/${code}`)
+            console.log(state)
+        })
+        .catch(err=> {
+            console.log(err)
+        })
+    }
 
     return (
         <div className="home">
             <div className="home_left">
-                <h1>चला भेटू या...</h1>
-                <div className="home_left_bottom">
-                    <button onClick={NewMeet} className="new_meeting">New Meeting</button>
-                    <input onChange={e=> setCode(e.target.value)} className="meeting_code" type="text" placeholder="Enter the meeting code..." />
-                    <button onClick={JoinMeet} className="join_meeting">Join</button>
+                <div  className="home_left_top">
+                    <div className="user_right">
+                        {
+                            user ? 
+                            <div>
+                                <span>{user?.email}</span><br></br>
+                                <span onClick={LoginInWithGoogle} style={{color:"blue"}}>
+                                    Switch Account
+                                </span>
+                            </div>
+                            :
+                            <div onClick={LoginInWithGoogle}>
+                                <SignInWithGoogle/>
+                            </div>
+                        }
+                    </div>
+                    <div className="user_left">
+                        {
+                            user ?
+                                <img src={user?.photoURL} width="50px" height="50px" alt="user logo" />
+                            :
+                                <img src={userImage} width="50px" height="50px" alt="user logo" />
+                        }
+                    </div>
                 </div>
-                
+                <div className="home_left_bottom">
+                    <h1>चला भेटू या...</h1>
+                    <div className="home_left_bottom_bottom">
+                        <button onClick={NewMeet} className="new_meeting">New Meeting</button>
+                        <input onChange={e=> setCode(e.target.value)} className="meeting_code" type="text" placeholder="Enter the meeting code..." />
+                        <button onClick={JoinMeet} className="join_meeting">Join</button>
+                    </div>
+                </div>
             </div>
             <div className="home_right">
-            <img src={img}/>
+            <img src={img} alt="right side"/>
             </div>
         </div>
     )

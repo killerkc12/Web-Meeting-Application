@@ -13,8 +13,8 @@
     "concurrently": "^5.1.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "faker": "^4.1.0",
-    "nodemon": "^2.0.2",
+    "firebase": "^4.8.0",
+    "nodemon": "^2.0.12",
     "react": "^17.0.2",
     "react-bootstrap": "^1.0.0",
     "react-css-grid": "^2.0.0-0",
@@ -34,7 +34,7 @@
     "xss": "^1.0.8"
   },
   "scripts": {
-    "start": "node server",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -53,5 +53,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "sass": "^1.38.1"
   }
 }

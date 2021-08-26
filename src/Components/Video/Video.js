@@ -1,18 +1,7 @@
-import React, { Component } from 'react'
+import React, { Component, useContext } from 'react'
 import io from 'socket.io-client'
-import faker from "faker"
 
-import {IconButton, Badge, Input, Button} from '@material-ui/core'
-import VideocamIcon from '@material-ui/icons/Videocam'
-import VideocamOffIcon from '@material-ui/icons/VideocamOff'
-import MicIcon from '@material-ui/icons/Mic'
-import MicOffIcon from '@material-ui/icons/MicOff'
-import ScreenShareIcon from '@material-ui/icons/ScreenShare'
-import StopScreenShareIcon from '@material-ui/icons/StopScreenShare'
-import CallEndIcon from '@material-ui/icons/CallEnd'
-import ChatIcon from '@material-ui/icons/Chat'
-
-import {RiMicFill, RiMicOffFill} from 'react-icons/ri'
+import {Input, Button} from '@material-ui/core'
 import {BiVideo, BiVideoOff} from 'react-icons/bi'
 import {MdCallEnd, MdScreenShare, MdStopScreenShare, MdPeople, MdChat} from 'react-icons/md'
 import {IoMdMic, IoMdMicOff} from 'react-icons/io'
@@ -26,6 +15,7 @@ import Modal from 'react-bootstrap/Modal'
 import 'bootstrap/dist/css/bootstrap.css'
 import "./Video.css"
 import { Col } from 'react-grid-system'
+import { useStateValue } from '../ReactContextAPI/StateProvider'
 
 // const server_url = "http://localhost:4001"
 const server_url = "https://web-meeting-application.herokuapp.com/"
@@ -45,6 +35,7 @@ class Video extends Component {
 		super(props)
 
 		this.localVideoref = React.createRef()
+		const {user} = this.props.location	
 
 		this.videoAvailable = false
 		this.audioAvailable = false
@@ -61,11 +52,18 @@ class Video extends Component {
 			newmessages: 0,
 			askForUsername: true,
 			username: "",
-			usernames: []
+			usernames: [],
+			user : null
 		}
 		connections = {}
 
 		this.getPermissions()
+	}
+
+	componentDidMount = () => {
+		const {user} = this.props.location
+		console.log(user)
+		this.setState(user)
 	}
 
 	getPermissions = async () => {
