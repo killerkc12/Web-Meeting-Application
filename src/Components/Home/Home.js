@@ -2,6 +2,7 @@ import React from 'react'
 import { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { auth, provider } from '../Firebase/Firebase'
+import Login from '../Login/Login'
 import SignInWithGoogle from '../Login/SignInWithGoogle'
 import { actionTypes } from '../ReactContextAPI/reducer'
 import { useStateValue } from '../ReactContextAPI/StateProvider'
@@ -17,11 +18,14 @@ const Home = () => {
     const [state, dispatch] = useStateValue()
     const history = useHistory()
 
+    const GenerateRandom = (size) => {
+        return Math.random().toString(36).substring(2,size)
+    }
 
 
      const NewMeet = () => {
          console.log("clicked")
-        let code = Math.random().toString(36).substring(2,10)
+        let code = GenerateRandom(5) + "-" + GenerateRandom(6) + "-" + GenerateRandom(5)
         history.push({
             pathname:`/${code}`,
             user
@@ -40,42 +44,20 @@ const Home = () => {
                 type: actionTypes.SET_USER,
                 user: result.user
             })
-            history.push(`/${code}`)
-            console.log(state)
+            // history.push(`/${code}`)
         })
         .catch(err=> {
             console.log(err)
         })
     }
+    console.log("State == ",state)
+    console.log("User === ",user)
+
 
     return (
         <div className="home">
             <div className="home_left">
-                <div  className="home_left_top">
-                    <div className="user_right">
-                        {
-                            user ? 
-                            <div>
-                                <span>{user?.email}</span><br></br>
-                                <span onClick={LoginInWithGoogle} style={{color:"blue"}}>
-                                    Switch Account
-                                </span>
-                            </div>
-                            :
-                            <div onClick={LoginInWithGoogle}>
-                                <SignInWithGoogle/>
-                            </div>
-                        }
-                    </div>
-                    <div className="user_left">
-                        {
-                            user ?
-                                <img src={user?.photoURL} width="50px" height="50px" alt="user logo" />
-                            :
-                                <img src={userImage} width="50px" height="50px" alt="user logo" />
-                        }
-                    </div>
-                </div>
+                <Login/>
                 <div className="home_left_bottom">
                     <h1>चला भेटू या...</h1>
                     <div className="home_left_bottom_bottom">

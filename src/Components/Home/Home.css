@@ -19,23 +19,7 @@
     color: whitesmoke;
 }
 
-.home_left_top {
-    display: flex;
-    position: absolute;
-    float: right;
-    right: 0;
-    margin: 5px;
-    align-items: center;
-}
 
-.user_right {
-    margin-right: 5px;
-}
-
-.user_left > img {
-    border-radius: 50px;
-    border: 2px solid #fff;
-}
 
 .home_left_bottom{
     flex: 1;
@@ -45,6 +29,8 @@
     padding-left: 30%;
 
 }
+
+
 
 .home_left_bottom > h1 {
     color: whitesmoke;

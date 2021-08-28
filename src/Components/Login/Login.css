@@ -1,0 +1,26 @@
+.home_left_top {
+    display: flex;
+    position: absolute;
+    float: right;
+    right: 0;
+    margin: 5px;
+    align-items: center;
+}
+
+.user_right {
+    margin-right: 10px;
+}
+
+.user_left > img {
+    border-radius: 50px;
+    border: 2px solid #fff;
+}
+
+.switch_account {
+    float: right;
+    cursor: pointer;
+}
+
+.switch_account:hover {
+    color: #4285f4 !important;
+}
