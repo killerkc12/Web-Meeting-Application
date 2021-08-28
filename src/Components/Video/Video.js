@@ -3,7 +3,7 @@ import io from 'socket.io-client'
 
 import {Input, Button} from '@material-ui/core'
 import {BiVideo, BiVideoOff} from 'react-icons/bi'
-import {MdCallEnd, MdScreenShare, MdStopScreenShare, MdPeople, MdChat} from 'react-icons/md'
+import {MdCallEnd, MdScreenShare, MdStopScreenShare, MdPeople, MdChat, MdFiberManualRecord} from 'react-icons/md'
 import {IoMdMic, IoMdMicOff} from 'react-icons/io'
 import {BiVideoRecording} from 'react-icons/bi'
 
@@ -16,6 +16,8 @@ import 'bootstrap/dist/css/bootstrap.css'
 import "./Video.css"
 import { Col } from 'react-grid-system'
 import { useStateValue } from '../ReactContextAPI/StateProvider'
+import { useReactMediaRecorder } from 'react-media-recorder'
+import ScreenRecording from '../Recording/ScreenRecording'
 
 // const server_url = "http://localhost:4001"
 const server_url = "https://web-meeting-application.herokuapp.com/"
@@ -37,6 +39,8 @@ class Video extends Component {
 		this.localVideoref = React.createRef()
 		const {user} = this.props.location	
 
+		this.mediaRecorder = ""
+
 		this.videoAvailable = false
 		this.audioAvailable = false
 
@@ -46,6 +50,7 @@ class Video extends Component {
 			screen: false,
 			chatModal: false,
 			userModal: false,
+			screenRecordingModal: false,
 			screenAvailable: false,
 			messages: [],
 			message: "",
@@ -53,12 +58,22 @@ class Video extends Component {
 			askForUsername: true,
 			username: "",
 			usernames: [],
-			user : null
+			user : null,
+
+			screenRec : true,
+			audioRec : false,
+			videoRec: false,
+			isRecording: false,
+
 		}
+
+	
+
 		connections = {}
 
 		this.getPermissions()
 	}
+	
 
 	componentDidMount = () => {
 		const {user} = this.props.location
@@ -452,8 +467,73 @@ class Video extends Component {
 		window.location.href = "/"
 	}
 
+	// screen Recording start 
+
+	async recordScreen() {
+		return await navigator.mediaDevices.getDisplayMedia({
+			audio: true, 
+			video: { mediaSource: "screen"}
+		});
+	}
+
+	saveFile = (recordedChunks) =>{
+
+		const blob = new Blob(recordedChunks, {
+		   type: 'video/webm'
+		 });
+		 let date = new Date().toString()
+		 let filename = window.location.href.split('/')[3] + " " + date.slice(0,24),
+			 downloadLink = document.createElement('a');
+		 downloadLink.href = URL.createObjectURL(blob);
+		 downloadLink.download = `${filename}.webm`;
+	 
+		 document.body.appendChild(downloadLink);
+		 downloadLink.click();
+		 URL.revokeObjectURL(blob); // clear from memory
+		 document.body.removeChild(downloadLink);
+	}
+
+	createRecorder (stream, mimeType) {
+		// the stream data is stored in this array
+		let recordedChunks = []; 
+	  
+		const mediaRecorder = new MediaRecorder(stream);
+	  
+		mediaRecorder.ondataavailable = function (e) {
+		  if (e.data.size > 0) {
+			recordedChunks.push(e.data);
+		  }  
+		};
+		mediaRecorder.onstop = () => {
+			this.saveFile(recordedChunks)
+		   recordedChunks = [];
+		};
+		mediaRecorder.start(200); // For every 200ms the stream data will be stored in a separate chunk.
+		return mediaRecorder;
+	  }
+	
+	 
+
+	startScreenRecording = async () => {
+		let stream = await this.recordScreen();
+		this.setState({isRecording: true})
+		let mimeType = 'video/webm';
+		this.mediaRecorder = this.createRecorder(stream, mimeType);
+	}
+
+	stopScreenRecording = async () => {
+		this.mediaRecorder.stop();
+		this.setState({isRecording: false})
+	}
+
+	// screen Recording ends 
+
+	openScreenRecording = () => this.setState({ screenRecordingModal: true })
+	closeScreenRecording = () => this.setState({ screenRecordingModal: false })
+
 	openChat = () => this.setState({ chatModal: true, newmessages: 0 })
 	closeChat = () => this.setState({ chatModal: false })
+
 	handleMessage = (e) => this.setState({ message: e.target.value })
 
 	openUser = () => this.setState({ userModal: true})
@@ -625,9 +705,19 @@ class Video extends Component {
 								</Col>
 								<Col mc={3}>
 								<div className="icons_right">
-									<div className="recording">
-										<BiVideoRecording/>
-									</div>
+									
+									{
+										this.state.isRecording === false ?
+											<div className="recording" onClick={this.startScreenRecording} >
+												<BiVideoRecording/>
+											</div>
+										:
+											<div className="recording_status" onClick={this.stopScreenRecording}>
+												<MdFiberManualRecord className="recording_status_icon"/>
+												<span className="rec">REC</span>
+											</div>
+									}
+									
 									<div className="people" onClick={this.openUser} >
 										<MdPeople/><sup>{this.state.usernames.length}</sup>
 									</div>
@@ -655,6 +745,7 @@ class Video extends Component {
 								<Button variant="contained" color="primary" onClick={this.sendMessage}>Send</Button>
 							</Modal.Footer>
 						</Modal>
+
 						{/* //modal for list of participants */}
 						<Modal show={this.state.userModal} onHide={this.closeUser} style={{ zIndex: "999999" }}>
 							<Modal.Header closeButton>
@@ -666,6 +757,23 @@ class Video extends Component {
 										<p style={{ wordBreak: "break-all" }}>{index+1} : <b>{item}</b></p><hr></hr>
 									</div>
 								)) : <p></p>}
+							</Modal.Body>
+						</Modal>
+
+						{/* //modal for Screen Recording */}
+						<Modal show={this.state.screenRecordingModal} onHide={this.closeScreenRecording} style={{ zIndex: "999999" }}>
+							<Modal.Header closeButton>
+								<Modal.Title>People List</Modal.Title>
+							</Modal.Header>
+							<Modal.Body style={{ overflow: "auto", overflowY: "auto", height: "400px", textAlign: "left" }} >
+								<ScreenRecording
+									screen={true}
+									audio={false}
+									video={false}
+									downloadRecordingPath="Screen_Recording_Demo"
+									downloadRecordingType="mp4"
+									emailToSupport="support@xyz.com"
+								></ScreenRecording>
 							</Modal.Body>
 						</Modal>
 
