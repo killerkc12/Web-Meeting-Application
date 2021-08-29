@@ -51,31 +51,6 @@ const Home = () => {
     return (
         <div className="home">
             <div className="home_left">
-                <div  className="home_left_top">
-                    <div className="user_right">
-                        {
-                            user ? 
-                            <div>
-                                <span>{user?.email}</span><br></br>
-                                <span onClick={LoginInWithGoogle} style={{color:"blue"}}>
-                                    Switch Account
-                                </span>
-                            </div>
-                            :
-                            <div onClick={LoginInWithGoogle}>
-                                <SignInWithGoogle/>
-                            </div>
-                        }
-                    </div>
-                    <div className="user_left">
-                        {
-                            user ?
-                                <img src={user?.photoURL} width="50px" height="50px" alt="user logo" />
-                            :
-                                <img src={userImage} width="50px" height="50px" alt="user logo" />
-                        }
-                    </div>
-                </div>
                 <div className="home_left_bottom">
                     <h1>चला भेटू या...</h1>
                     <div className="home_left_bottom_bottom">
