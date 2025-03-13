@@ -21,6 +21,7 @@ import ScreenRecording from '../Recording/ScreenRecording'
 
 const server_url = "http://localhost:4001"
 // const server_url = "https://web-meeting-application.herokuapp.com/"
+// const server_url = REACT_APP_SERVER_BASE_URL
 var connections = {}
 const peerConnectionConfig = {
 	'iceServers': [
