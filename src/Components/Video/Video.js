@@ -17,8 +17,8 @@ import "./Video.css"
 import { Col } from 'react-grid-system'
 import { useStateValue } from '../ReactContextAPI/StateProvider'
 
-// const server_url = "http://localhost:4001"
-const server_url = "https://web-meeting-application.herokuapp.com/"
+const server_url = "http://localhost:4001"
+// const server_url = "https://web-meeting-application.herokuapp.com/"
 var connections = {}
 const peerConnectionConfig = {
 	'iceServers': [
