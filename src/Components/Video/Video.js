@@ -19,9 +19,9 @@ import { useStateValue } from '../ReactContextAPI/StateProvider'
 import { useReactMediaRecorder } from 'react-media-recorder'
 import ScreenRecording from '../Recording/ScreenRecording'
 
-const server_url = "http://localhost:4001"
+// const server_url = "http://localhost:4001"
 // const server_url = "https://web-meeting-application.herokuapp.com/"
-// const server_url = REACT_APP_SERVER_BASE_URL
+const server_url = process.env.REACT_APP_SERVER_BASE_URL
 var connections = {}
 const peerConnectionConfig = {
 	'iceServers': [
